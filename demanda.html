@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Carga - Memória de Cálculo (Norma NTC 900600)</title>
+
+<style>
+:root {
+    --bg-main: #f4f6f9;
+    --bg-card: #ffffff;
+    --bg-input: #f9fafb;
+    --border-color: #d1d5db;
+    --border-input: #9ca3af;
+    --text-main: #1f2937;
+    --text-muted: #4b5563;
+    --primary: #e65100;
+    --primary-hover: #bf360c;
+    --shadow: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+    --bg-main: #111827;
+    --bg-card: #1f2937;
+    --bg-input: #111827;
+    --border-color: #374151;
+    --border-input: #4b5563;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --primary: #f25a24;
+    --primary-hover: #d94614;
+    --shadow: rgba(0, 0, 0, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* BARRA SUPERIOR DA APLICAÇÃO */
+.topbar {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    min-height: 75px;
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand-logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.brand-subtitle {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 1px;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.topbar-actions button {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.topbar-actions button:hover {
+    background: #ffffff;
+    color: var(--primary);
+    border-color: #ffffff;
+}
+
+.main {
+    max-width: 1500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    align-items: stretch;
+}
+
+.box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--primary);
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 4px 12px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.box b {
+    color: var(--text-main);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 4px;
+    width: 100%;
+}
+
+.row-header {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.input-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 3px;
+}
+
+input {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-input);
+    color: var(--text-main);
+    padding: 5px 8px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 5px rgba(230, 81, 0, 0.3);
+}
+
+.motGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    font-size: 11px;
+}
+
+.motItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-main);
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.motItem span {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.motItem input {
+    max-width: 45px;
+    padding: 2px;
+    font-size: 11px;
+}
+
+.results-sub {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+}
+
+.results-sub p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
+
+.result {
+    background: var(--bg-main);
+    color: var(--primary);
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--primary);
+    display: block;
+    width: 100%;
+    font-weight: 700;
+    text-align: center;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+/* PAINEL DE RELATÓRIO TÉCNICO */
+.report-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 25px;
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.report-header-flex {
+    display: none;
+    align-items: center;
+    background: var(--primary);
+    color: #ffffff;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.report-header-flex .brand-logo-img {
+    filter: brightness(0) invert(1);
+    height: 38px;
+}
+
+.report-title-area h3 {
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: #ffffff;
+    margin-bottom: 3px;
+}
+
+.report-title-area p {
+    font-size: 11px;
+    opacity: 0.95;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+}
+
+.report-body-text {
+    font-size: 12px;
+    color: var(--text-main);
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.report-item {
+    background: var(--bg-main);
+    padding: 12px 15px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.report-item span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.report-item strong {
+    font-size: 18px;
+    color: var(--primary);
+}
+
+.disclaimer-box {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-main);
+    padding: 12px 15px;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary);
+    line-height: 1.5;
+}
+
+/* RODAPÉ DE RESULTADO GERAL */
+.footer-action-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--primary);
+    border-radius: 6px;
+    padding: 15px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.total-title {
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+}
+
+.total-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.total-result-box {
+    background: var(--bg-main);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 24px;
+    font-size: 22px;
+    font-weight: 900;
+    border-radius: 4px;
+}
+
+button {
+    background: var(--border-color);
+    color: var(--text-main);
+    border: 1px solid var(--border-input);
+    padding: 9px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #dc2626;
+}
+
+.btn-primary-action {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary-hover);
+}
+
+.btn-primary-action:hover {
+    background: var(--primary-hover);
+}
+
+@media print {
+    body { background-color: #ffffff !important; color: #000000 !important; }
+    .grid, .topbar, .footer-action-block { display: none !important; }
+    .report-panel { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; }
+    .report-header-flex { display: flex !important; -webkit-print-color-adjust: exact; background: #e65100 !important; color: #fff !important; }
+    .report-item { background: #f9fafb !important; -webkit-print-color-adjust: exact; }
+}
+
+@media (max-width: 1200px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .report-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    .footer-action-block { flex-direction: column; gap: 12px; text-align: center; }
+    .report-header-flex { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BARRA SUPERIOR DA APLICAÇÃO -->
+<div class="topbar">
+    <div class="brand-container">
+        <img src="logo.png" alt="Logo Copel" class="brand-logo-img">
+        <div class="brand-text">
+            <span class="brand-title">Simulador de Demanda</span>
+            <span class="brand-subtitle">Memória de Cálculo Elétrica</span>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <button onclick="alternarTema()">🌓 Tema</button>
+        <button onclick="window.print()" class="btn-primary-action" style="background: #ffffff; color: var(--primary); border: none;">🖨️ Imprimir Relatório</button>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- BLOCOS DE ENTRADA DE DADOS -->
+    <div class="grid">
+        <!-- UNIDADES RESIDENCIAIS -->
+        <div class="box">
+            <div>
+                <b>Unidades Residenciais</b>
+                <div class="row-header" style="display: flex; justify-content: space-between; padding: 0 5px;">
+                    <span>Qtd.</span><span>Área Útil (m²)</span>
+                </div>
+                <div class="input-block">
+                    <div class="input-row"><input id="q1" type="number" min="0" placeholder="Qtd"><input id="a1" type="number" min="0" placeholder="m²"></div>
+                    <div class="input-row"><input id="q2" type="number" min="0"><input id="a2" type="number" min="0"></div>
+                    <div class="input-row"><input id="q3" type="number" min="0"><input id="a3" type="number" min="0"></div>
+                    <div class="input-row"><input id="q4" type="number" min="0"><input id="a4" type="number" min="0"></div>
+                    <div class="input-row"><input id="q5" type="number" min="0"><input id="a5" type="number" min="0"></div>
+                    <div class="input-row"><input id="q6" type="number" min="0"><input id="a6" type="number" min="0"></div>
+                </div>
+            </div>
+            <div class="results-sub">
+                <p>Total Unidades: <span id="tot">0</span></p>
+                <p>Área Média: <span id="amed">0.00</span> m²</p>
+                <span id="res" class="result">0.00 kVA</span>
+            </div>
+        </div>
+
+        <!-- COMERCIAL / INDUSTRIAL -->
+        <div class="box">
+            <div>
+                <b>Comercial / Industrial</b>
+                <div class="row-header" style="margin-bottom: 6px;">Carga Instalada Bruta (kW)</div>
+                <div class="input-block">
+                    <input id="com" type="number" step="0.01" min="0" placeholder="0.00">
+                </div>
+            </div>
+            <div class="results-sub">
+                <p>Demanda Estimada (Fd 0.8):</p>
+                <span id="rcom" class="result">0.00 kVA</span>
+            </div>
+        </div>
+
+        <!-- ÁREA DE CONDOMÍNIO -->
+        <div class="box">
+            <div>
+                <b>Área de Condomínio</b>
+                <div class="input-block">
+                    <div class="row-header">Iluminação Instalada (kW)</div>
+                    <input id="ilum" type="number" step="0.01" min="0" style="margin-bottom: 6px;" placeholder="0.00">
+                    
+                    <div class="row-header">Tomadas Instaladas (kW)</div>
+                    <input id="tom" type="number" step="0.01" min="0" placeholder="0.00">
+                </div>
+            </div>
+            <div class="results-sub">
+                <p>Demanda Estimada:</p>
+                <span id="rcond" class="result">0.00 kVA</span>
+            </div>
+        </div>
+
+        <!-- MOTORES -->
+        <div class="box">
+            <div>
+                <b>Motores (cv / HP)</b>
+                <div class="input-block">
+                    <div class="motGrid">
+                        <div class="motItem"><span>1/3 cv</span><input id="m1" type="number" min="0"></div>
+                        <div class="motItem"><span>1/2 cv</span><input id="m2" type="number" min="0"></div>
+                        <div class="motItem"><span>3/4 cv</span><input id="m3" type="number" min="0"></div>
+                        <div class="motItem"><span>1 cv</span><input id="m4" type="number" min="0"></div>
+                        <div class="motItem"><span>1.5 cv</span><input id="m5" type="number" min="0"></div>
+                        <div class="motItem"><span>2 cv</span><input id="m6" type="number" min="0"></div>
+                        <div class="motItem"><span>3 cv</span><input id="m7" type="number" min="0"></div>
+                        <div class="motItem"><span>4 cv</span><input id="m8" type="number" min="0"></div>
+                        <div class="motItem"><span>5 cv</span><input id="m9" type="number" min="0"></div>
+                        <div class="motItem"><span>7.5 cv</span><input id="m10" type="number" min="0"></div>
+                        <div class="motItem"><span>10 cv</span><input id="m11" type="number" min="0"></div>
+                        <div class="motItem"><span>12.5 cv</span><input id="m12" type="number" min="0"></div>
+                        <div class="motItem"><span>15 cv</span><input id="m13" type="number" min="0"></div>
+                        <div class="motItem"><span>20 cv</span><input id="m14" type="number" min="0"></div>
+                        <div class="motItem"><span>25 cv</span><input id="m15" type="number" min="0"></div>
+                        <div class="motItem"><span>30 cv</span><input id="m16" type="number" min="0"></div>
+                        <div class="motItem"><span>40 cv</span><input id="m17" type="number" min="0"></div>
+                        <div class="motItem"><span>50 cv</span><input id="m18" type="number" min="0"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="results-sub">
+                <span id="rmot" class="result">0.00 kVA</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL DE RELATÓRIO TÉCNICO -->
+    <div class="report-panel">
+        <div class="report-header-flex">
+            <img src="logo.png" alt="Logo Copel" class="brand-logo-img">
+            <div class="report-title-area">
+                <h3>Memória de Cálculo de Carga e Demanda</h3>
+                <p>Relatório Técnico Preliminar de Dimensionamento de Entradas de Serviço</p>
+            </div>
+        </div>
+
+        <div class="report-body-text">
+            <p>O presente documento consolida a apuração das cargas instaladas brutas e as respectivas aplicações dos fatores de diversidade e demanda (incluindo o fator multiplicador de 1,2 para projetos conforme NTC 900600 item 4.2)[cite: 2] para o empreendimento.</p>
+        </div>
+
+        <div class="report-grid">
+            <div class="report-item">
+                <span>Carga Instalada Bruta Estimada</span>
+                <strong id="rev-instalada">0.00 kVA</strong>
+            </div>
+            <div class="report-item">
+                <span>Provável Carga Demandada Total</span>
+                <strong id="rev-projetada">0.00 kVA</strong>
+            </div>
+        </div>
+
+        <div class="disclaimer-box">
+            <strong>Aviso Legal / Responsabilidade Técnica:</strong> As informações apresentadas neste documento consistem em estimativas preliminares geradas com base nos parâmetros da norma NTC 900600 da Copel[cite: 2]. O dimensionamento final de redes e entradas de serviço é de exclusiva responsabilidade técnica do projetista.
+        </div>
+    </div>
+
+    <!-- RODAPÉ DE RESULTADO GERAL -->
+    <div class="footer-action-block">
+        <div class="total-title">Demanda Total Homologada Projeto (Fator 1.2)</div>
+        <div class="total-container">
+            <div class="total-result-box"><span id="total">0.00</span> kVA</div>
+            <button onclick="limpar()">Limpar Dados</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function num(v){
+    if(!v) return 0;
+    return Number(v.toString().replace(",", ".")) || 0;
+}
+
+const diversidade = [
+1,1.96,2.92,3.88,4.84,5.8,6.76,7.72,8.68,9.64,
+10.42,11.2,11.93,12.76,13.54,14.32,15.1,15.88,16.66,17.44,
+18.04,18.65,19.25,19.86,20.46,21.06,21.67,22.27,22.88,23.48,
+24.08,24.69,25.29,25.9,26.5,27.1,27.71,28.31,28.92,29.52,
+30.12,30.73,31.33,31.94,32.54,33.1,33.66,34.22,34.78,35.34,
+35.9,36.46,37.02,37.58,38.14,38.7,39.26,39.82,40.38,40.94,
+41.5,42.06,42.62,43.18,43.74,44.3,44.86,45.42,45.98,46.54,
+47.1,47.66,48.22,48.78,49.34,49.9,50.46,51.02,51.58,52.14,
+52.7,53.26,53.82,54.38,54.94,55.5,56.06,56.62,57.18,57.74,
+58.3,58.86,59.42,59.98,60.54,61.1,61.66,62.22,62.78,63.34,
+63.59,63.84,64.09,64.34,64.59,64.84,65.09,65.34,65.59,65.84,
+66.09,66.34,66.59,66.84,67.09,67.34,67.59,67.84,68.09,68.34,
+68.59,68.84,69.09,69.34,69.59,69.79,69.99,70.19,70.39,70.59,
+70.79,70.99,71.19,71.39,71.59,71.79,71.99,72.19,72.39,72.59,
+72.79,72.99,73.19,73.39,73.59,73.79,73.99,74.19,74.39,74.59
+];
+
+function fator(n){
+    if(n<=0) return 0;
+    if(n<=diversidade.length) return diversidade[n-1];
+    return diversidade[diversidade.length-1];
+}
+
+function kva(a){
+    return a<=42 ? 1 : 0.034939*Math.pow(a,0.895075);
+}
+
+const cvParaKw = {
+    "1/3": 0.37, "1/2": 0.55, "3/4": 0.75, "1": 1.10, "1.5": 1.50,
+    "2": 2.20, "3": 3.00, "4": 4.00, "5": 5.50, "7.5": 7.50,
+    "10": 11.0, "12.5": 13.5, "15": 15.0, "20": 22.0, "25": 26.0,
+    "30": 33.0, "40": 44.0, "50": 55.0
+};
+const ordemMotores = ["1/3","1/2","3/4","1","1.5","2","3","4","5","7.5","10","12.5","15","20","25","30","40","50"];
+
+function calcular(){
+    let somaArea=0;
+    let totalUnidades=0;
+    let somaBrutaResidencial = 0;
+
+    for(let i=1;i<=6;i++){
+        let q = num(document.getElementById("q"+i).value);
+        let a = num(document.getElementById("a"+i).value);
+        if(q>0 && a>0){
+            somaArea += q * a;
+            totalUnidades += q;
+            somaBrutaResidencial += q * (kva(a) * 4.5); 
+        }
+    }
+
+    let am = totalUnidades > 0 ? somaArea/totalUnidades : 0;
+    let kv = kva(am);
+    let demRes = totalUnidades > 0 ? kv * fator(totalUnidades) : 0;
+
+    set("tot", totalUnidades);
+    set("amed", am.toFixed(2));
+    set("res", demRes.toFixed(2) + " kVA");
+
+    // Comercial / Industrial (Fd 0.8)
+    let comBruto = num(document.getElementById("com").value);
+    let demCom = comBruto * 0.8;
+    set("rcom", demCom.toFixed(2) + " kVA");
+
+    // Condomínio: Iluminação (100% até 10 kW, 25% acima) e Tomadas (20%)[cite: 2]
+    let ilum = num(document.getElementById("ilum").value);
+    let tom = num(document.getElementById("tom").value);
+    let condBruto = ilum + tom;
+    let demCond = (ilum <= 10 ? ilum : 10 + (ilum - 10) * 0.25) + tom * 0.2;
+    set("rcond", demCond.toFixed(2) + " kVA");
+
+    // Motores (Tabela 3 da NTC 900600)[cite: 2]
+    let motDemTotal = 0;
+    let motBrutoTotal = 0;
+    ordemMotores.forEach((cv,index)=>{
+        let qtd = num(document.getElementById("m"+(index+1)).value);
+        if(qtd>0){
+            let curva = tabelaMotores[cv];
+            let pos = Math.min(qtd-1,curva.length-1);
+            motDemTotal += curva[pos];
+            motBrutoTotal += qtd * (cvParaKw[cv] || 1);
+        }
+    });
+    set("rmot", motDemTotal.toFixed(2) + " kVA");
+
+    // Soma Base da Demanda do Edifício
+    let somaDemandaBase = demRes + demCom + demCond + motDemTotal;
+
+    // Aplicação do Fator Multiplicador de 1,2 para Projetistas conforme item 4.2 da NTC 900600[cite: 2]
+    let totalDemandaProjeto = somaDemandaBase * 1.2;
+    set("total", totalDemandaProjeto.toFixed(2));
+
+    let cargaInstaladaBrutaTotal = somaBrutaResidencial + comBruto + condBruto + motBrutoTotal;
+
+    document.getElementById("rev-instalada").innerText = cargaInstaladaBrutaTotal.toFixed(2) + " kVA";
+    document.getElementById("rev-projetada").innerText = (cargaInstaladaBrutaTotal > 0 ? totalDemandaProjeto : 0).toFixed(2) + " kVA";
+}
+
+const tabelaMotores = {
+    "1/3":[0.65,0.98,1.24,1.50,1.76], "1/2":[0.87,1.31,1.65,2.06,2.35],
+    "3/4":[1.26,1.89,2.39,2.90,3.40], "1":[1.52,2.28,2.89,3.50,4.10],
+    "1.5":[2.17,3.26,4.12,4.99,5.86], "2":[2.70,4.05,5.13,6.21,7.29],
+    "3":[4.04,6.06,7.68,9.29,10.91], "4":[5.03,7.55,9.56,11.57,13.58],
+    "5":[6.02,9.03,11.44,13.85,16.25], "7.5":[8.65,12.98,16.44,19.90],
+    "10":[11.54,17.31,21.93,26.54], "12.5":[14.69,21.14,26.77,32.41],
+    "15":[16.65,24.98,31.63,38.29], "20":[22.10,33.15,41.99,50.83],
+    "25":[25.83,38.75,49.03,59.41], "30":[30.52,45.78,57.99,70.20],
+    "40":[39.74,59.61,75.51,91.40], "50":[46.73,73.10,92.59,112.03]
+};
+
+function set(id,v){ document.getElementById(id).innerText = v; }
+
+document.querySelectorAll("input").forEach(e=>{
+    e.addEventListener("input", calcular);
+});
+
+function limpar(){
+    document.querySelectorAll("input").forEach(i => i.value = "");
+    document.querySelectorAll(".result").forEach(s => s.innerText = "0.00 kVA");
+    set("total", "0.00");
+    set("tot", "0");
+    set("amed", "0.00");
+    document.getElementById("rev-instalada").innerText = "0.00 kVA";
+    document.getElementById("rev-projetada").innerText = "0.00 kVA";
+}
+
+function alternarTema() {
+    const html = document.documentElement;
+    const atual = html.getAttribute("data-theme");
+    html.setAttribute("data-theme", atual === "light" ? "dark" : "light");
+}
+</script>
+
+</body>
+</html>

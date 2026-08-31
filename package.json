@@ -1,0 +1,28 @@
+{
+  "name": "demanda-projetos",
+  "version": "1.0.0",
+  "description": "Simulador de Carga - Memória de Cálculo (Norma NTC 900600)",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JEduDias/Demanda-projetos.git"
+  },
+  "keywords": [
+    "vercel",
+    "analytics",
+    "simulador",
+    "demanda"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JEduDias/Demanda-projetos/issues"
+  },
+  "homepage": "https://github.com/JEduDias/Demanda-projetos#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
